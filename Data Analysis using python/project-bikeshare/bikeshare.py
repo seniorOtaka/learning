@@ -18,24 +18,29 @@ def get_filters():
     print('Hello! Let\'s explore some US bikeshare data!')
     # get user input for city (chicago, new york city, washington). HINT: Use a while loop to handle invalid inputs
     cities = ["chicago","new york city","washington"]
+    cities_names = ', '.join(cities)
 
     while True:
-        city = input("Enter City name: ")
+        city = input("Cities List ({})\n Enter City name from the list above: ".format(cities_names))
+        city = city.lower()
         if city in cities:
             break
 
     # get user input for month (all, january, february, ... , june)
     months = ["all","january","february","march","april","may","june","july","august","september","october","november","december"]
-
+    months_names = ', '.join(months)
     while True:
-        month = input("Enter month name: ")
+        month = input("Months list ({})\n Enter month name from the list above: ".format(months_names))
+        month = month.lower()
         if month in months:
             break
 
      # get user input for day of week (all, monday, tuesday, ... sunday) 
-    week_days = ["all","monday","tuesday","wednesday","thuresday","friday","saturday","sunday"]          
+    week_days = ["all","monday","tuesday","wednesday","thuresday","friday","saturday","sunday"]   
+    week_days_names = ', '.join(week_days)       
     while True:
-        day = input("Enter day name: ")
+        day = input("Week days list ({})\nEnter day name from the list above: ".format(week_days_names))
+        day = day.lower()
         if day in week_days:
             break
     print('-'*40)
@@ -154,17 +159,26 @@ def user_stats(df):
 
     # Display counts of user types
     user_types = df['User Type'].value_counts()
-    print("Count of Gender:\n",user_types)
+    print("Count of user types:\n",user_types)
+    
     # Display counts of gender
-    user_gender = df['Gender'].value_counts()
-    print("Count of Gender:\n",user_gender)
+    if 'Gender' in df.index:
+        user_gender = df['Gender'].value_counts()
+        print("Count of Gender:\n",user_gender)
+    else:
+        print("No Gender data available for this city.")
+    
     # Display earliest, most recent, and most common year of birth
-    earliest_year = df['Birth Year'].dropna(0).min()
-    print("Earliest year of birth: ",earliest_year)
-    most_recent_year = df['Birth Year'].dropna(0).max()
-    print("Most recent year of birth: ",most_recent_year)
-    most_common_year = df['Birth Year'].dropna(0).value_counts().idxmax()
-    print("Most common year of birth: ",most_common_year)
+    if 'Birth Year' in df.index:
+        earliest_year = df['Birth Year'].dropna(0).min()
+        print("Earliest year of birth: ",earliest_year)
+        most_recent_year = df['Birth Year'].dropna(0).max()
+        print("Most recent year of birth: ",most_recent_year)
+        most_common_year = df['Birth Year'].dropna(0).value_counts().idxmax()
+        print("Most common year of birth: ",most_common_year)
+    else:
+        print("No birth year data available for this city.")
+    
     print("\nThis took %s seconds." % (time.time() - start_time))
     print('-'*40)
 
@@ -178,6 +192,17 @@ def main():
         station_stats(df)
         trip_duration_stats(df)
         user_stats(df)
+
+        counter = 0
+        while True:
+            choice = input("Do you want to see the next five rows of raw data? (Y/N)")
+            if choice.lower() == 'y':
+                print(df.iloc[counter:counter+5])
+                counter =+ 5
+            elif choice.lower() == 'n':
+                break
+            else:
+                continue
 
         restart = input('\nWould you like to restart? Enter yes or no.\n')
         if restart.lower() != 'yes':
